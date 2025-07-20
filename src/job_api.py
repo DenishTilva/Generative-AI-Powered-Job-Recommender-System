@@ -30,6 +30,6 @@ def fetch_naukri_jobs(search_query, location = "india", rows=60):
         "sortBy": "relevance",
         "experience": "all",
     }
-    run = apify_client.actor("alpcnRV9YI9lYVPWk").call(run_input=run_input)
+    run = apify_client.actor("wsrn5gy5C4EDeYCcD").call(run_input=run_input)
     jobs = list(apify_client.dataset(run["defaultDatasetId"]).iterate_items())
     return jobs

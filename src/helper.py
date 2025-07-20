@@ -1,16 +1,14 @@
-import fitz # PyMuPDF
-import os 
+import fitz  # PyMuPDF
+import os
 from dotenv import load_dotenv
-from openai import OpenAI
+import google.generativeai as genai
 
-
+# Load environment variables
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-
-
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Configure Gemini API
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
 
 
 def extract_text_from_pdf(uploaded_file):
@@ -18,7 +16,7 @@ def extract_text_from_pdf(uploaded_file):
     Extracts text from a PDF file.
     
     Args:
-        uploaded_file (str): The path to the PDF file.
+        uploaded_file: A file-like object for the PDF (e.g., from a web form).
         
     Returns:
         str: The extracted text.
@@ -30,33 +28,18 @@ def extract_text_from_pdf(uploaded_file):
     return text
 
 
-
-def ask_openai(prompt, max_tokens=500):
+def ask_gemini(prompt, model_name="models/gemini-1.5-flash", max_tokens=500):
     """
-    Sends a prompt to the OpenAI API and returns the response.
+    Sends a prompt to the Gemini API (Gemini 1.5 Flash) and returns the response.
     
     Args:
-        prompt (str): The prompt to send to the OpenAI API.
-        model (str): The model to use for the request.
-        temperature (float): The temperature for the response.
+        prompt (str): The text prompt to send to Gemini.
+        model_name (str): Gemini model name (default: "models/gemini-1.5-flash").
+        max_tokens (int): Max response tokens.
         
     Returns:
-        str: The response from the OpenAI API.
+        str: Gemini's response.
     """
-    
-
-    response = client.chat.completions.create(
-        model= "gpt-4o",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0.5,
-        max_tokens=max_tokens
-    )
-
-    return response.choices[0].message.content
-
-
+    model = genai.GenerativeModel(model_name)
+    response = model.generate_content(prompt)
+    return response.text
